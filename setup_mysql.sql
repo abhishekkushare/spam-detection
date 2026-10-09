@@ -1,0 +1,16 @@
+-- Run in MySQL Workbench as root (for Register page / DB-backed login)
+CREATE DATABASE IF NOT EXISTS SMS_SPAM_DETECTION;
+
+USE SMS_SPAM_DETECTION;
+
+CREATE TABLE IF NOT EXISTS users (
+  authid VARCHAR(64) NOT NULL,
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  tno VARCHAR(64) NOT NULL
+);
+
+-- Optional app user (match MYSQL_USER / MYSQL_PASSWORD in .env)
+CREATE USER IF NOT EXISTS 'abhishek'@'localhost' IDENTIFIED BY 'abhishek';
+GRANT ALL PRIVILEGES ON SMS_SPAM_DETECTION.* TO 'abhishek'@'localhost';
+FLUSH PRIVILEGES;
