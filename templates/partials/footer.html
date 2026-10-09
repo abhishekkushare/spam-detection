@@ -1,0 +1,28 @@
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-6 col-sm-3">
+                <h5>Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('inbox') }}">Inbox</a></li>
+                    <li><a href="{{ url_for('contactpage') }}">Contact</a></li>
+                    <li><a href="{{ url_for('register') }}">Register</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-sm-5">
+                <h5>Address</h5>
+                <address>
+                    Fergusson College, F.C. Road<br>
+                    Pune, Maharashtra<br>
+                    India<br>
+                    <i class="fa fa-envelope"></i>
+                    <a href="mailto:principal@fergusson.edu">principal@fergusson.edu</a>
+                </address>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-auto copyright">© SMS Spam Detection</div>
+        </div>
+    </div>
+</footer>

@@ -1,0 +1,29 @@
+<nav class="navbar navbar-dark navbar-expand-sm fixed-top">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#Navbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="{{ url_for('index') }}">SMS Spam Detection</a>
+        <div class="collapse navbar-collapse" id="Navbar">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item px-2 {% if active == 'home' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('index') }}"><span class="fa fa-home fa-lg"></span> Home</a>
+                </li>
+                <li class="nav-item px-2 {% if active == 'inbox' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('inbox') }}"><span class="fa fa-inbox fa-lg"></span> Inbox</a>
+                </li>
+                <li class="nav-item px-2 {% if active == 'contact' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('contactpage') }}"><span class="fa fa-address-card fa-lg"></span> Contact</a>
+                </li>
+                <li class="nav-item px-2 {% if active == 'register' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('register') }}"><span class="fa fa-user-plus fa-lg"></span> Register</a>
+                </li>
+            </ul>
+            {% if show_login %}
+            <span class="navbar-text">
+                <a data-toggle="modal" data-target="#loginModal"><span class="fa fa-sign-in"></span> Login</a>
+            </span>
+            {% endif %}
+        </div>
+    </div>
+</nav>
