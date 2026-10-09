@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SMS Spam Detection — Project Guide</title>
+  <style>
+    @page { size: A4; margin: 16mm 14mm 18mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #e8eef2;
+      color: #0f172a;
+      font-family: "Segoe UI", Calibri, sans-serif;
+      line-height: 1.45;
+    }
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 12px auto;
+      background: #fff;
+      padding: 16mm 16mm 22mm;
+      position: relative;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      page-break-after: always;
+    }
+    .page:last-child { page-break-after: auto; }
+    header.doc-head {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 3px solid #0f766e;
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+      color: #115e59;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    h1 { font-size: 28px; margin: 0 0 8px; color: #134e4a; }
+    h2 { font-size: 18px; margin: 18px 0 8px; color: #134e4a; }
+    h3 { font-size: 15px; margin: 14px 0 6px; }
+    p, li { font-size: 13.5px; }
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 250mm;
+    }
+    .cover h1 { font-size: 40px; }
+    .kicker { color: #0f766e; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .meta { margin-top: 28px; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 8px 0 12px; }
+    th, td { border: 1px solid #dbe3ea; padding: 6px 8px; text-align: left; vertical-align: top; }
+    th { background: #134e4a; color: #fff; }
+    pre, code { font-family: Consolas, monospace; font-size: 12px; }
+    pre {
+      background: #f1f5f9;
+      padding: 10px 12px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+    }
+    img.shot {
+      width: 100%;
+      border: 1px solid #dbe3ea;
+      border-radius: 8px;
+      margin: 6px 0 4px;
+    }
+    .caption { font-size: 12px; color: #64748b; margin: 0 0 12px; }
+    .footer {
+      position: absolute;
+      left: 16mm;
+      right: 16mm;
+      bottom: 10mm;
+      border-top: 1px solid #dbe3ea;
+      padding-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #64748b;
+    }
+    ul { margin-top: 6px; }
+    a { color: #0f766e; }
+  </style>
+</head>
+<body>
+
+<section class="page">
+  <div class="cover">
+    <p class="kicker">Project guide</p>
+    <h1>SMS Spam Detection</h1>
+    <p>A Flask, Twilio, MySQL, and TensorFlow prototype that separates legitimate SMS from spam.</p>
+    <div class="meta">
+      <p><strong>Author:</strong> Abhishek Kushare</p>
+      <p><strong>Runtime:</strong> Python 3.10.11 · Flask 2.2.5 · TensorFlow 2.10.1</p>
+      <p><strong>Status:</strong> Educational prototype</p>
+    </div>
+  </div>
+  <div class="footer"><span>Abhishek Kushare</span><span>Page 1 of 12</span></div>
+</section>
+
+<section class="page">
+  <header class="doc-head"><span>SMS Spam Detection</span><span>Contents</span></header>
+  <h1>Contents</h1>
+  <table>
+    <tr><th>Page</th><th>Section</th></tr>
+    <tr><td>3</td><td>Introduction and features</td></tr>
+    <tr><td>4</td><td>Architecture</td></tr>
+    <tr><td>5</td><td>Technology and versions</td></tr>
+    <tr><td>6</td><td>How the application works</td></tr>
+    <tr><td>7</td><td>Screenshot — home, light theme</td></tr>
+    <tr><td>8</td><td>Screenshot — home, dark theme</td></tr>
+    <tr><td>9</td><td>Screenshot — Sign In</td></tr>
+    <tr><td>10</td><td>Screenshot — inbox</td></tr>
+    <tr><td>11</td><td>Screenshot — registration, and setup</td></tr>
+    <tr><td>12</td><td>Security, limits, and a short enhancement list</td></tr>
+  </table>
+  <h2>Companion notes</h2>
+  <ul>
+    <li><code>docs/ARCHITECTURE.md</code> — routes, session, database, UI</li>
+    <li><code>docs/MODEL.md</code> — dataset, network, metrics</li>
+    <li><code>docs/SETUP_WINDOWS.md</code> — Python 3.10, MySQL, runbook</li>
+  </ul>
+  <div class="footer"><span>Abhishek Kushare</span><span>Page 2 of 12</span></div>
+</section>
+
+<section class="page">
+  <header class="doc-head"><span>SMS Spam Detection</span><span>Introduction</span></header>
+  <h1>1. Introduction</h1>
+  <p>The project classifies SMS from a Twilio account. Each message is labelled <strong>Ham</strong> (legitimate) or <strong>Spam</strong>. It is a teaching prototype: one Flask process, one saved neural network, and an optional MySQL table. It is not a production filter.</p>
+  <h2>2. Features</h2>
+  <ul>
+    <li>Sign in with a Twilio Account SID and Auth Token.</li>
+    <li>Read recent messages from that account.</li>
+    <li>Score each body with the saved Keras model.</li>
+    <li>Split the inbox into ham and spam.</li>
+    <li>Optionally store a name, SID, and token in MySQL.</li>
+    <li>Light and dark theme, remembered in the browser.</li>
+    <li>Shared header and a three-column footer with social icons.</li>
+  </ul>
+  <h2>3. Who it is for</h2>
+  <p>A student or developer who wants to see a web form, an external API, a database, and a classifier in one small system. Written by <strong>Abhishek Kushare</strong>.</p>
+  <div class="footer"><span>Abhishek Kushare</span><span>Page 3 of 12</span></div>
+</section>
+
+<section class="page">
+  <header class="doc-head"><span>SMS Spam Detection</span><span>Architecture</span></header>
+  <h1>4. Architecture</h1>
+  <pre>Browser
+  │  http://127.0.0.1:8001
+  ▼
+Flask app.py
+  ├── session          who is signed in
+  ├── Twilio client    created after Sign In
+  ├── MySQL            optional users row
+  └── model.py
+        ├── spam_model/
+        └── tokenizer.pkl</pre>
+  <h3>Routes</h3>
+  <table>
+    <tr><th>Path</th><th>Role</th></tr>
+    <tr><td>GET /</td><td>Home and sign-in form</td></tr>
+    <tr><td>POST /login</td><td>Verify Twilio, open inbox</td></tr>
+    <tr><td>GET /logout</td><td>Clear session and Twilio client</td></tr>
+    <tr><td>GET /inbox</td><td>Classify up to 10 messages</td></tr>
+    <tr><td>GET, POST /register</td><td>Insert a users row</td></tr>
+    <tr><td>GET /contact</td><td>Feedback form, not stored</td></tr>
+  </table>
+  <p>More detail is in <code>docs/ARCHITECTURE.md</code>.</p>
+  <div class="footer"><span>Abhishek Kushare</span><span>Page 4 of 12</span></div>
+</section>
+
+<section class="page">
+  <header class="doc-head"><span>SMS Spam Detection</span><span>Technology</span></header>
+  <h1>5. Technology and versions</h1>
+  <table>
+    <tr><th>Technology</th><th>Version</th><th>Use</th></tr>
+    <tr><td>Python</td><td>3.10.11</td><td>Runtime</td></tr>
+    <tr><td>Flask</td><td>2.2.5</td><td>Web application</td></tr>
+    <tr><td>TensorFlow / Keras</td><td>2.10.1</td><td>Train and predict</td></tr>
+    <tr><td>NumPy</td><td>1.23.5</td><td>Arrays</td></tr>
+    <tr><td>pandas</td><td>1.5.3</td><td>Read spam.csv</td></tr>
+    <tr><td>scikit-learn</td><td>1.2.2</td><td>Split and metrics</td></tr>
+    <tr><td>python-dotenv</td><td>1.0.1</td><td>Read .env</td></tr>
+    <tr><td>Twilio SDK</td><td>9.11.2</td><td>Fetch SMS</td></tr>
+    <tr><td>Flask-MySQLdb</td><td>2.0.0</td><td>MySQL access</td></tr>
+    <tr><td>mysqlclient</td><td>2.3.0</td><td>MySQL driver</td></tr>
+    <tr><td>MySQL Server</td><td>8.x</td><td>Registration database</td></tr>
+    <tr><td>Bootstrap</td><td>4.5.2</td><td>Layout</td></tr>
+    <tr><td>Font Awesome</td><td>5.15.4</td><td>Icons</td></tr>
+    <tr><td>Notebook</td><td>6.5.7</td><td>Optional training UI</td></tr>
+  </table>
+  <p>The virtual environment used on this PC is <code>C:\Users\kusharea\AppData\Local\Programs\spam310venv</code>. A venv under the OneDrive project path can fail because Windows path length is limited.</p>
+  <div class="footer"><span>Abhishek Kushare</span><span>Page 5 of 12</span></div>
+</section>
+
+<section class="page">
+  <header class="doc-head"><span>SMS Spam Detection</span><span>Behaviour</span></header>
+  <h1>6. How the application works</h1>
+  <ol>
+    <li>Home collects the Twilio Account SID and Auth Token.</li>
+    <li>Flask asks Twilio to fetch that account. A database row is optional.</li>
+    <li>The session stores the display name and the SID. The header then shows that name, Sign Out, and Register.</li>
+    <li>Inbox streams messages and keeps the first 10.</li>
+    <li><code>process_sms()</code> maps the text to 8 token ids.</li>
+    <li>If the sigmoid output is greater than 0.5, the row is spam. Otherwise it is ham.</li>
+  </ol>
+  <h3>Model in one paragraph</h3>
+  <p><code>spam.csv</code> has 5,572 messages (4,825 ham, 747 spam). An 80/20 split feeds a Keras network: embedding of size 24, flatten, dense layers 500 / 200 / 100, dropout 0.5, and a sigmoid output. Optimizer RMSprop, loss binary cross-entropy, early stopping patience 10. Notebook accuracy on the test split is about <strong>0.982</strong>. Spam recall is about <strong>0.89</strong>. Full notes are in <code>docs/MODEL.md</code>.</p>
+  <h3>Database</h3>
+  <p>Database <code>SMS_SPAM_DETECTION</code>, table <code>users</code>: <code>authid</code> (SID), <code>id</code>, <code>name</code>, <code>tno</code> (Auth Token). Column order matters because sign-in reads the SID from the first column and the token from the fourth.</p>
+  <div class="footer"><span>Abhishek Kushare</span><span>Page 6 of 12</span></div>
+</section>
+
+<section class="page">
+  <header class="doc-head"><span>SMS Spam Detection</span><span>Figure 1</span></header>
+  <h1>7. Home — light theme</h1>
+  <img class="shot" src="images/home-light.png" alt="Home page, light theme">
+  <p class="caption">Figure 1. Home page. Theme control, Sign In, and Register sit on the right. Register is to the right of Sign In.</p>
+  <div class="footer"><span>Abhishek Kushare</span><span>Page 7 of 12</span></div>
+</section>
+
+<section class="page">
+  <header class="doc-head"><span>SMS Spam Detection</span><span>Figure 2</span></header>
+  <h1>8. Home — dark theme</h1>
+  <img class="shot" src="images/home-dark.png" alt="Home page, dark theme">
+  <p class="caption">Figure 2. The same page after the header theme icon is used. The choice is stored in the browser.</p>
+  <div class="footer"><span>Abhishek Kushare</span><span>Page 8 of 12</span></div>
+</section>
+
+<section class="page">
+  <header class="doc-head"><span>SMS Spam Detection</span><span>Figure 3</span></header>
+  <h1>9. Sign In</h1>
+  <img class="shot" src="images/sign-in.png" alt="Sign-in dialog">
+  <p class="caption">Figure 3. Header Sign In opens this dialog. Placeholders only — no live credentials.</p>
+  <div class="footer"><span>Abhishek Kushare</span><span>Page 9 of 12</span></div>
+</section>
+
+<section class="page">
+  <header class="doc-head"><span>SMS Spam Detection</span><span>Figure 4</span></header>
+  <h1>10. Inbox</h1>
+  <img class="shot" src="images/inbox.png" alt="Inbox with ham and spam">
+  <p class="caption">Figure 4. Signed-in header (name, Sign Out, Register) and the ham/spam split. Rows are sample messages for this figure.</p>
+  <div class="footer"><span>Abhishek Kushare</span><span>Page 10 of 12</span></div>
+</section>
+
+<section class="page">
+  <header class="doc-head"><span>SMS Spam Detection</span><span>Figure 5</span></header>
+  <h1>11. Registration</h1>
+  <img class="shot" src="images/register.png" alt="Registration form">
+  <p class="caption">Figure 5. Registration. This page needs MySQL. Sign-in does not.</p>
+  <h2>12. Setup in brief</h2>
+  <pre>Activate spam310venv
+pip install -r requirements.txt
+python train_export_model.py
+python app.py</pre>
+  <p>Open <code>http://127.0.0.1:8001</code>. Create <code>.env</code> for MySQL only. Do not commit it. Step-by-step Windows notes are in <code>docs/SETUP_WINDOWS.md</code>.</p>
+  <div class="footer"><span>Abhishek Kushare</span><span>Page 11 of 12</span></div>
+</section>
+
+<section class="page">
+  <header class="doc-head"><span>SMS Spam Detection</span><span>Close</span></header>
+  <h1>13. Security notes</h1>
+  <ul>
+    <li>Do not commit <code>.env</code>, Account SIDs, or Auth Tokens.</li>
+    <li><code>tno</code> stores a token in plain text. Fine for a local demo only.</li>
+    <li>The Twilio client is process memory. One signed-in user at a time, and Sign In again after a restart.</li>
+    <li>Flask debug mode stays off outside your own machine.</li>
+  </ul>
+  <h2>14. Future enhancements</h2>
+  <ul>
+    <li>Load the model once at startup.</li>
+    <li>Fetch only the 10 messages the inbox shows.</li>
+    <li>Show the score beside each message.</li>
+    <li>Stop storing tokens in plain text.</li>
+    <li>Offer prediction as a small REST call.</li>
+  </ul>
+  <h2>15. Dataset credit</h2>
+  <p>Training text is the public SMS Spam Collection, saved here as <code>spam.csv</code> (5,572 messages). Application guide by <strong>Abhishek Kushare</strong>.</p>
+  <div class="footer"><span>Abhishek Kushare</span><span>Page 12 of 12</span></div>
+</section>
+
+</body>
+</html>

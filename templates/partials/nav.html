@@ -1,29 +1,33 @@
-<nav class="navbar navbar-dark navbar-expand-sm fixed-top">
+<nav class="navbar navbar-dark navbar-expand-md fixed-top">
     <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">SMS Spam Detection</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#Navbar">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="{{ url_for('index') }}">SMS Spam Detection</a>
         <div class="collapse navbar-collapse" id="Navbar">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item px-2 {% if active == 'home' %}active{% endif %}">
-                    <a class="nav-link" href="{{ url_for('index') }}"><span class="fa fa-home fa-lg"></span> Home</a>
+                <li class="nav-item {% if active == 'home' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a>
                 </li>
-                <li class="nav-item px-2 {% if active == 'inbox' %}active{% endif %}">
-                    <a class="nav-link" href="{{ url_for('inbox') }}"><span class="fa fa-inbox fa-lg"></span> Inbox</a>
+                <li class="nav-item {% if active == 'inbox' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('inbox') }}"><i class="fas fa-inbox"></i> Inbox</a>
                 </li>
-                <li class="nav-item px-2 {% if active == 'contact' %}active{% endif %}">
-                    <a class="nav-link" href="{{ url_for('contactpage') }}"><span class="fa fa-address-card fa-lg"></span> Contact</a>
-                </li>
-                <li class="nav-item px-2 {% if active == 'register' %}active{% endif %}">
-                    <a class="nav-link" href="{{ url_for('register') }}"><span class="fa fa-user-plus fa-lg"></span> Register</a>
+                <li class="nav-item {% if active == 'contact' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('contactpage') }}"><i class="fas fa-address-card"></i> Contact</a>
                 </li>
             </ul>
-            {% if show_login %}
-            <span class="navbar-text">
-                <a data-toggle="modal" data-target="#loginModal"><span class="fa fa-sign-in"></span> Login</a>
-            </span>
-            {% endif %}
+            <div class="nav-actions">
+                <button type="button" id="themeToggle" class="btn btn-nav-icon" aria-label="Toggle color theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                {% if logged_in %}
+                <span class="nav-user" title="{{ user_label }}"><i class="fas fa-user"></i> {{ user_label }}</span>
+                <a class="btn btn-nav" href="{{ url_for('logout') }}">Sign Out</a>
+                {% else %}
+                <a class="btn btn-nav" data-toggle="modal" data-target="#loginModal" href="#">Sign In</a>
+                {% endif %}
+                <a class="btn btn-nav-outline {% if active == 'register' %}active{% endif %}" href="{{ url_for('register') }}">Register</a>
+            </div>
         </div>
     </div>
 </nav>

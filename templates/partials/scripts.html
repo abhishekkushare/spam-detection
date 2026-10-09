@@ -4,5 +4,22 @@
 <script>
   $(function () {
     $('[data-toggle="tooltip"]').tooltip();
+    var root = document.documentElement;
+    var toggle = document.getElementById('themeToggle');
+    function paintIcon() {
+      if (!toggle) return;
+      var dark = root.getAttribute('data-theme') === 'dark';
+      toggle.innerHTML = dark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+      toggle.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+    }
+    paintIcon();
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        paintIcon();
+      });
+    }
   });
 </script>

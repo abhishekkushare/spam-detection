@@ -1,28 +1,34 @@
 <footer class="footer">
     <div class="container">
         <div class="row">
-            <div class="col-6 col-sm-3">
+            <div class="col-md-4 mb-4 mb-md-0">
                 <h5>Links</h5>
-                <ul class="list-unstyled">
+                <ul class="list-unstyled footer-links">
                     <li><a href="{{ url_for('index') }}">Home</a></li>
                     <li><a href="{{ url_for('inbox') }}">Inbox</a></li>
                     <li><a href="{{ url_for('contactpage') }}">Contact</a></li>
                     <li><a href="{{ url_for('register') }}">Register</a></li>
                 </ul>
             </div>
-            <div class="col-6 col-sm-5">
+            <div class="col-md-4 mb-4 mb-md-0">
                 <h5>Address</h5>
                 <address>
                     Fergusson College, F.C. Road<br>
-                    Pune, Maharashtra<br>
-                    India<br>
-                    <i class="fa fa-envelope"></i>
+                    Pune, Maharashtra, India<br>
                     <a href="mailto:principal@fergusson.edu">principal@fergusson.edu</a>
                 </address>
             </div>
+            <div class="col-md-4">
+                <h5>Follow</h5>
+                <div class="social-links">
+                    <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://linkedin.com" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="mailto:principal@fergusson.edu" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-auto copyright">© SMS Spam Detection</div>
-        </div>
+        <div class="footer-bottom">© SMS Spam Detection</div>
     </div>
 </footer>

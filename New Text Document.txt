@@ -1,0 +1,7 @@
+git status
+
+git add .
+
+git commit -m "UI Updated"
+
+git push -u origin main

@@ -2,8 +2,8 @@ import os
 import warnings
 warnings.filterwarnings("ignore")
 
-from flask import redirect
-from flask import Flask, render_template, make_response, request, flash,url_for
+from flask import redirect, session
+from flask import Flask, render_template, make_response, request, flash, url_for
 from flask_mysqldb import MySQL
 #from flaskext.mysql import MySQL
 from twilio.rest import Client
@@ -45,6 +45,14 @@ def fetch_user_from_db(authid, token):
         return None
 
 
+@app.context_processor
+def inject_user():
+    return {
+        'logged_in': session.get('logged_in', False),
+        'user_label': session.get('user_name') or session.get('user_sid') or '',
+    }
+
+
 def insert_user(name, authid, tno):
     conn = mysql.connection
     if conn is None:
@@ -77,17 +85,32 @@ def login():
         if account:
             TWILIO_ACCOUNT_SID = account[0]
             TWILIO_AUTH_TOKEN = account[3]
+            user_name = account[2]
         else:
             TWILIO_ACCOUNT_SID = authid
             TWILIO_AUTH_TOKEN = token
+            user_name = authid
 
         try:
             twilio_api = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
             twilio_api.api.accounts(TWILIO_ACCOUNT_SID).fetch()
+            session['logged_in'] = True
+            session['user_name'] = user_name
+            session['user_sid'] = TWILIO_ACCOUNT_SID
             return redirect(url_for('inbox'))
         except Exception:
             flash("ID and Token is not valid")
             return render_template('index.html')
+
+
+@app.route('/logout')
+def logout():
+    global TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, twilio_api
+    TWILIO_ACCOUNT_SID = None
+    TWILIO_AUTH_TOKEN = None
+    twilio_api = None
+    session.clear()
+    return redirect(url_for('index'))
         
 
 @app.route("/inbox")
