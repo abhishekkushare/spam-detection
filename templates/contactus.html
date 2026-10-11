@@ -24,7 +24,12 @@
                 <div class="card">
                     <div class="card-header card-header-brand">Feedback</div>
                     <div class="card-body">
-                        <form>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% for category, message in messages %}
+                                <div class="alert {% if category == 'success' %}alert-success{% else %}alert-danger{% endif %} text-center" role="alert">{{ message }}</div>
+                            {% endfor %}
+                        {% endwith %}
+                        <form method="POST" action="{{ url_for('contactpage') }}">
                             <div class="form-group">
                                 <label for="uname">Name</label>
                                 <input type="text" name="uname" id="uname" class="form-control" placeholder="Your name" required>

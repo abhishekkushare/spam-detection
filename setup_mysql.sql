@@ -10,6 +10,13 @@ CREATE TABLE IF NOT EXISTS users (
   tno VARCHAR(64) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS feedback (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  suggestions TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Optional app user (match MYSQL_USER / MYSQL_PASSWORD in .env)
 CREATE USER IF NOT EXISTS 'abhishek'@'localhost' IDENTIFIED BY 'abhishek';
 GRANT ALL PRIVILEGES ON SMS_SPAM_DETECTION.* TO 'abhishek'@'localhost';

@@ -285,15 +285,35 @@ body {
 }
 
 .alert-success {
-  background: var(--color-ham-bg);
+  background: #d1fae5;
   color: #065f46;
-  border: 1px solid #a7f3d0;
+  border: 1px solid #6ee7b7;
 }
 
 .alert-danger {
-  background: var(--color-spam-bg);
+  background: #fee2e2;
   color: #991b1b;
-  border: 1px solid #fecaca;
+  border: 1px solid #fca5a5;
+}
+
+.inbox-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.inbox-heading h1 {
+  margin-bottom: 0;
+}
+
+.sms-timestamp {
+  /* white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; */
+  white-space: pre-line;
+  min-width: 145px;
 }
 
 html[data-theme="dark"] {
@@ -323,6 +343,18 @@ html[data-theme="dark"] label {
 html[data-theme="dark"] .form-control {
   background: #0f172a;
   border-color: #334155;
+}
+
+html[data-theme="dark"] .alert-success {
+  background: #064e3b;
+  color: #ecfdf5;
+  border-color: #34d399;
+}
+
+html[data-theme="dark"] .alert-danger {
+  background: #450a0a;
+  color: #fee2e2;
+  border-color: #f87171;
 }
 
 html[data-theme="dark"] .text-muted,

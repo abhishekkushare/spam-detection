@@ -1,3 +1,14 @@
+STEPS:
+1. Open Powershell
+2. Run Below Commands
+
+& "C:\Users\kusharea\AppData\Local\Programs\spam310venv\Scripts\Activate.ps1" 
+cd "C:\Users\kusharea\OneDrive - AMDOCS\Backup Folders\Desktop\workspace\Docs\Automation\spam-detector-master\spam-detection"
+python app.py
+
+
+GIT COMMANDS :
+
 git status
 
 git add .
@@ -5,3 +16,6 @@ git add .
 git commit -m "UI Updated"
 
 git push -u origin main
+
+
+TWILIO ACCOUNT : https://console.twilio.com/dashboard?variant_override=non-dev

@@ -12,8 +12,13 @@
 
     <main class="page-section">
         <div class="container">
-            <h1 class="mb-1">Message inbox</h1>
-            <p class="text-muted mb-4">ML-classified SMS from your Twilio account (up to 10 recent messages).</p>
+            <div class="inbox-heading">
+                <h1>Message inbox</h1>
+                <button type="button" id="refreshInbox" class="btn btn-brand btn-sm">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <p class="text-muted mb-4">ML-classified SMS from your Twilio account (up to 10 recent messages). Refreshes every minute.</p>
 
             {% if not not_spam_msg and not spam_msg %}
             <div class="inbox-panel empty-state">
@@ -23,14 +28,14 @@
             {% endif %}
 
             <section class="inbox-panel panel-ham">
-                <h2><i class="fa fa-check-circle"></i> Ham <span class="badge badge-success">{{ not_spam_msg|length }}</span></h2>
+                <h2><i class="fa fa-check-circle"></i> Safe Messages <span class="badge badge-success">{{ not_spam_msg|length }}</span></h2>
                 {% if not_spam_msg %}
                 <div class="table-responsive">
                     <table class="table table-hover table-ham mb-0">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Date sent</th>
+                                <th>Sr.No.</th>
+                                <th>Timestamp</th>
                                 <th>From</th>
                                 <th>Body</th>
                             </tr>
@@ -39,7 +44,7 @@
                             {% for x in not_spam_msg %}
                             <tr>
                                 <td>{{ loop.index }}</td>
-                                <td>{{ x.date_sent }}</td>
+                                <td class="sms-timestamp">{{ x.date_sent | ist }}</td>
                                 <td>{{ x.from_ }}</td>
                                 <td>{{ x.body }}</td>
                             </tr>
@@ -54,7 +59,7 @@
 
             <section class="inbox-panel panel-spam">
                 <h2>
-                    <i class="fa fa-exclamation-triangle"></i> Spam
+                    <i class="fa fa-exclamation-triangle"></i> Spam Messages
                     <span class="badge badge-danger">{{ spam_msg|length }}</span>
                 </h2>
                 <button class="btn btn-spam btn-sm mb-3" type="button" data-toggle="collapse" data-target="#spam-div" aria-expanded="true">
@@ -66,8 +71,8 @@
                         <table class="table table-hover table-spam mb-0">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Date sent</th>
+                                    <th>Sr.No.</th>
+                                    <th>Timestamp</th>
                                     <th>From</th>
                                     <th>Body</th>
                                 </tr>
@@ -76,7 +81,7 @@
                                 {% for x in spam_msg %}
                                 <tr>
                                     <td>{{ loop.index }}</td>
-                                    <td>{{ x.date_sent }}</td>
+                                    <td class="sms-timestamp">{{ x.date_sent | ist }}</td>
                                     <td>{{ x.from_ }}</td>
                                     <td>{{ x.body }}</td>
                                 </tr>
@@ -94,5 +99,13 @@
 
     {% include "partials/footer.html" %}
     {% include "partials/scripts.html" %}
+    <script>
+      document.getElementById('refreshInbox').addEventListener('click', function () {
+        window.location.reload();
+      });
+      setInterval(function () {
+        window.location.reload();
+      }, 60000);
+    </script>
 </body>
 </html>

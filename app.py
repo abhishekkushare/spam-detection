@@ -1,48 +1,67 @@
 import os
 import warnings
+from datetime import timezone
+from zoneinfo import ZoneInfo
+
 warnings.filterwarnings("ignore")
 
+import MySQLdb
 from flask import redirect, session
 from flask import Flask, render_template, make_response, request, flash, url_for
-from flask_mysqldb import MySQL
-#from flaskext.mysql import MySQL
 from twilio.rest import Client
 from twilio.twiml.messaging_response import Message, MessagingResponse
 from dotenv import load_dotenv
-from model import load_model,  process_sms
+from model import load_model, process_sms
 
 load_dotenv()
 
 app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
-app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')
-app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', '')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'abhishek')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'abhishek')
 app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'SMS_SPAM_DETECTION')
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'super secret key')
 
-mysql = MySQL(app)
+IST = ZoneInfo("Asia/Kolkata")
 
 TWILIO_ACCOUNT_SID = None
 TWILIO_AUTH_TOKEN = None
 twilio_api = None
 
 
-def fetch_user_from_db(authid, token):
+def get_db_connection():
+    return MySQLdb.connect(
+        host=app.config["MYSQL_HOST"],
+        user=app.config["MYSQL_USER"],
+        passwd=app.config["MYSQL_PASSWORD"],
+        db=app.config["MYSQL_DB"],
+        charset="utf8mb4",
+    )
+
+
+def fetch_user_by_authid(authid):
+    conn = get_db_connection()
     try:
-        conn = mysql.connection
-        if conn is None:
-            return None
         cursor = conn.cursor()
         cursor.execute(
-            "select * from users where authid = %s and tno = %s",
-            (authid, token),
+            "SELECT name FROM users WHERE authid = %s ORDER BY id DESC LIMIT 1",
+            (authid,),
         )
-        account = cursor.fetchone()
+        row = cursor.fetchone()
         cursor.close()
-        return account
-    except Exception:
-        return None
+        return row[0] if row else None
+    finally:
+        conn.close()
+
+
+@app.template_filter("ist")
+def format_ist(value):
+    if not value:
+        return ""
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return value.astimezone(IST).strftime("%d %b %Y\n%I:%M %p IST")
 
 
 @app.context_processor
@@ -54,19 +73,37 @@ def inject_user():
 
 
 def insert_user(name, authid, tno):
-    conn = mysql.connection
-    if conn is None:
-        raise RuntimeError("MySQL connection is not available")
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO users(name,authid,tno) VALUES(%s,%s,%s)",
-        (name, authid, tno),
-    )
-    conn.commit()
-    cursor.close()
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO users(name,authid,tno) VALUES(%s,%s,%s)",
+            (name, authid, tno),
+        )
+        conn.commit()
+        cursor.close()
+    finally:
+        conn.close()
 
 
-@app.route("/", methods=['GET', 'POST'])
+def insert_feedback(name, suggestions):
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO feedback(name, suggestions) VALUES(%s, %s)",
+            (name, suggestions),
+        )
+        conn.commit()
+        cursor.close()
+    finally:
+        conn.close()
+
+@app.route("/")
+def root():
+    return redirect(url_for('index'))
+    
+@app.route("/homepage", methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
@@ -80,15 +117,11 @@ def login():
     if request.method == 'POST':
         authid = request.form['s_id'].strip()
         token = request.form['token'].strip()
-        account = fetch_user_from_db(authid, token)
-
-        if account:
-            TWILIO_ACCOUNT_SID = account[0]
-            TWILIO_AUTH_TOKEN = account[3]
-            user_name = account[2]
-        else:
-            TWILIO_ACCOUNT_SID = authid
-            TWILIO_AUTH_TOKEN = token
+        TWILIO_ACCOUNT_SID = authid
+        TWILIO_AUTH_TOKEN = token
+        try:
+            user_name = fetch_user_by_authid(authid) or authid
+        except Exception:
             user_name = authid
 
         try:
@@ -97,6 +130,7 @@ def login():
             session['logged_in'] = True
             session['user_name'] = user_name
             session['user_sid'] = TWILIO_ACCOUNT_SID
+            session['user_token'] = TWILIO_AUTH_TOKEN
             return redirect(url_for('inbox'))
         except Exception:
             flash("ID and Token is not valid")
@@ -112,22 +146,55 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
         
+def get_twilio_client():
+    global twilio_api
+
+    if twilio_api is not None:
+        return twilio_api
+
+    sid = session.get('user_sid')
+    token = session.get('user_token')
+
+    if not sid or not token:
+        return None
+
+    try:
+        twilio_api = Client(sid, token)
+        twilio_api.api.accounts(sid).fetch()
+        return twilio_api
+    except Exception:
+        twilio_api = None
+        return None
 
 @app.route("/inbox")
 def inbox():
-    if twilio_api is None:
+    if get_twilio_client() is None:
+        session.clear()
         flash("Please log in with valid Twilio credentials first.")
         return redirect(url_for('index'))
+
     spam_msg, not_spam_msg = get_sms_and_predict(0, 10)
-    template = render_template('inbox.html', spam_msg=spam_msg, not_spam_msg=not_spam_msg)
-    response = make_response(template)
-    return response
-    return render_template('inbox.html')
+    return render_template(
+        'inbox.html',
+        spam_msg=spam_msg,
+        not_spam_msg=not_spam_msg
+    )
     
 
-@app.route("/contact")
+@app.route("/contact", methods=['GET', 'POST'])
 def contactpage():
-    print(f'Before')
+    if request.method == 'POST':
+        name = request.form.get('uname', '').strip()
+        suggestions = request.form.get('suggestions', '').strip()
+        if not name or not suggestions:
+            flash("Please enter your name and suggestions.", "error")
+            return redirect(url_for('contactpage'))
+        try:
+            insert_feedback(name, suggestions)
+            flash("Thanks for your feedback", "success")
+        except Exception as exc:
+            flash(f"Could not save feedback: {exc}", "error")
+        return redirect(url_for('contactpage'))
     return render_template('contactus.html')
 
 
@@ -143,8 +210,8 @@ def register():
         try:
             insert_user(name, authid, tno)
             flash("You have registered successfully.")
-        except Exception:
-            flash("Registration failed: check MySQL is running and MYSQL_* settings in .env")
+        except Exception as exc:
+            flash(f"Registration failed: {exc}")
         return render_template('register.html')
         
     if request.method == 'GET':
