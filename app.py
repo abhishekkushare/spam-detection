@@ -102,12 +102,15 @@ def insert_feedback(name, suggestions):
 @app.route("/")
 def root():
     return redirect(url_for('index'))
-    
+
 @app.route("/homepage", methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
-
+@app.route("/about")
+def aboutpage():
+    return render_template('aboutus1.html')
+    
 @app.route('/login', methods = ['POST', 'GET'])
 def login():
     global TWILIO_ACCOUNT_SID

@@ -5,6 +5,7 @@
                 <h5>Links</h5>
                 <ul class="list-unstyled footer-links">
                     <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('aboutpage') }}">About</a></li>
                     {% if logged_in %}
                     <li><a href="{{ url_for('inbox') }}">Inbox</a></li>
                     <li><a href="{{ url_for('contactpage') }}">Contact</a></li>
