@@ -1,4 +1,4 @@
-<nav class="navbar navbar-dark navbar-expand-md fixed-top">
+<nav class="navbar navbar-dark navbar-expand-md fixed-top {% if not logged_in %}navbar-logged-out{% endif %}">
     <div class="container">
         <a class="navbar-brand" href="{{ url_for('index') }}">SMS Spam Detection</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#Navbar">
@@ -9,9 +9,7 @@
                 <li class="nav-item {% if active == 'home' %}active{% endif %}">
                     <a class="nav-link" href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a>
                 </li>
-                <li class="nav-item {% if active == 'about' %}active{% endif %}">
-                    <a class="nav-link" href="{{ url_for('aboutpage') }}"><i class="fas fa-info-circle"></i> About</a>
-                </li>
+
                 {% if logged_in %}
                 <li class="nav-item {% if active == 'inbox' %}active{% endif %}">
                     <a class="nav-link" href="{{ url_for('inbox') }}"><i class="fas fa-inbox"></i> Inbox</a>
@@ -20,6 +18,10 @@
                     <a class="nav-link" href="{{ url_for('contactpage') }}"><i class="fas fa-address-card"></i> Contact</a>
                 </li>
                 {% endif %}
+
+                <li class="nav-item {% if active == 'about' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('aboutpage') }}"><i class="fas fa-info-circle"></i> About</a>
+                </li>
             </ul>
             <div class="nav-actions">
                 <button type="button" id="themeToggle" class="btn btn-nav-icon" aria-label="Toggle color theme">
