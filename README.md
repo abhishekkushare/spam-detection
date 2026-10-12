@@ -3,7 +3,7 @@
 **Author:** Abhishek Kushare  
 **Status:** Educational prototype
 
-A Flask web application that reads SMS messages from a Twilio account and classifies each one as **Ham** (legitimate) or **Spam**.
+A Flask web application that reads SMS messages from a Twilio account and classifies each one as **Safe** (legitimate) or **Spam**.
 
 The formatted guide, with page numbers and the same screenshots, is [docs/SMS_Spam_Detection_Guide.html](docs/SMS_Spam_Detection_Guide.html). Open it in a browser and print to PDF if you need a paged copy.
 
