@@ -32,17 +32,19 @@ The audience is a student or developer learning how a web app, a database, an ex
 | Flask | Pages, sign-in, and inbox |
 | TensorFlow | Spam or ham prediction |
 | Twilio | Source of live SMS messages |
-| MySQL | Optional saved account row |
+| MySQL | Optional saved account row and feedback |
 
 ## 2. Features
 
 - Sign in with a Twilio Account SID and Auth Token.
 - Pull the latest messages from that Twilio account.
 - Score each message with a saved Keras model.
-- Show ham and spam in separate inbox sections.
+- Show ham and spam in separate inbox sections, with times in IST.
 - Optional registration of a name, SID, and token in MySQL.
+- Contact feedback saved in MySQL.
+- About page linked from the header and footer.
 - Light and dark theme, saved in the browser.
-- Shared header and footer, including social icons.
+- Shared header and footer. The header is slate when signed out and teal when signed in.
 
 ## 3. Architecture
 
@@ -50,7 +52,7 @@ The audience is a student or developer learning how a web app, a database, an ex
 Browser
   │
   ▼
-Flask (app.py) ── MySQL users table (optional registration)
+Flask (app.py) ── MySQL users and feedback tables
   │
   ├── Twilio API  → recent SMS
   └── model.py    → tokenizer + TensorFlow model → Ham or Spam
@@ -100,13 +102,13 @@ These stay out of Git on purpose: `.env`, `.venv/`, and `spam_model/`. Generate 
 
 1. The visitor opens Home and submits a Twilio Account SID and Auth Token.
 2. Flask checks Twilio by fetching that account. A matching MySQL row is optional.
-3. On success the name (or the SID) is stored in the session and the browser goes to Inbox.
-4. Inbox loads up to 10 recent Twilio messages.
+3. On success the name (or the SID), SID, and token are stored in the session and the browser goes to Inbox.
+4. Inbox loads up to 10 recent Twilio messages and shows their times in IST. After a restart it rebuilds the Twilio client from the session.
 5. `process_sms()` turns each body into an 8-token sequence.
 6. The model returns a probability. **Above 0.5 is Spam. Otherwise it is Ham.**
 7. Sign Out clears the session.
 
-Registration writes `name`, `authid`, and `tno` into `SMS_SPAM_DETECTION.users`. The column `tno` holds the Auth Token in this prototype, not a phone number.
+Registration writes `name`, `authid`, and `tno` into `SMS_SPAM_DETECTION.users`. The column `tno` holds the Auth Token in this prototype, not a phone number. Contact writes `name` and `suggestions` into `SMS_SPAM_DETECTION.feedback`.
 
 ## 7. Screenshots
 
@@ -160,6 +162,7 @@ Twilio credentials are typed into the Sign In form. They are not required in `.e
 
 - Do not commit `.env`, Auth Tokens, or Account SIDs.
 - The `tno` column stores a token in plain text. That is acceptable only for a local demo.
+- The Auth Token is kept in Flask's session cookie. It is signed, not encrypted.
 - The Twilio client is kept in process memory, so this build is for one user at a time.
 - `debug=True` in `app.py` is for local development only.
 

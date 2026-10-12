@@ -60,6 +60,13 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(100) NOT NULL,
   tno VARCHAR(64) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS feedback (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  suggestions TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 ```
 
 If registration returns access denied (error 1044), the login user can connect but cannot use this database. As an administrator:
@@ -110,9 +117,9 @@ Open `http://127.0.0.1:8001`.
 
 1. Home → enter Twilio Account SID and Auth Token → Submit.  
    Or use **Sign In** in the header. Register sits to the right of Sign In.
-2. Inbox lists up to 10 messages. Green is ham, red is spam.
+2. Inbox lists up to 10 messages with IST times. Green is ham, red is spam.
 3. The moon/sun control switches theme.
-4. After sign-in the header shows the name (or SID) and **Sign Out**.
+4. After sign-in the header turns teal and shows the name (or SID), Inbox, Contact, and **Sign Out**. Signed out, it is slate.
 
 A new Twilio account with no SMS shows an empty inbox. Send a text to the Twilio number, then refresh.
 
@@ -123,10 +130,10 @@ A new Twilio account with no SMS shows an empty inbox. Send a text to the Twilio
 | `No module named tensorflow` | The prompt is not using `spam310venv` |
 | Long-path error during pip | Install into a short path, not under OneDrive |
 | `spam_model` or tokenizer missing | Run `train_export_model.py` |
-| Registration error about MySQL | Service running, `.env` password, `GRANT` on `SMS_SPAM_DETECTION` |
+| Registration or feedback error about MySQL | Service running, `.env` password, `GRANT` on `SMS_SPAM_DETECTION` |
 | Sign-in says the ID and token are not valid | SID and Auth Token are a pair from the same Twilio account |
 | Inbox is empty | Twilio logs have no messages yet |
-| Inbox asks you to sign in after a restart | The Twilio client is in memory only. Sign in again |
+| Inbox asks you to sign in after a restart | The saved session credentials could not rebuild the Twilio client. Sign in again |
 
 ## 8. Git
 
